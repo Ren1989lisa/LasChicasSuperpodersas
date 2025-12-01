@@ -29,7 +29,7 @@ fun button(
 
 
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black,
+            containerColor = Color.White,
             disabledContainerColor = Color.Gray,
             disabledContentColor = Color.DarkGray
         ),
@@ -38,7 +38,7 @@ fun button(
     ){
         Text(
             text = label,
-            color = Color.White
+            color = Color.Black
         )
     }
 
@@ -52,7 +52,7 @@ fun PreviewButton() {
             .background(Color(0xFF1b1d23)),
         contentAlignment = Alignment.Center
     ) {
-        button(onClick = {}, modifier = Modifier, enabled = true, label = "Iniciar secion")
+        button(onClick = {}, modifier = Modifier, enabled = true, label = "Iniciar sesion")
     }
 
 }
