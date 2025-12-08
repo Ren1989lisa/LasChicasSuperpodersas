@@ -14,6 +14,7 @@ import com.example.saltasalta.ui.theme.componets.WhiteButton
 
 @Composable
 fun HomeScreen(
+    currentUser: com.example.saltasalta.data.models.UserResponse,
     onNavigateToProfile: () -> Unit,
     onNavigateToGame: () -> Unit
 ) {

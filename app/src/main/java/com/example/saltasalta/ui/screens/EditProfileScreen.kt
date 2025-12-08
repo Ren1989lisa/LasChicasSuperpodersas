@@ -21,19 +21,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.saltasalta.data.models.UserResponse
 import com.example.saltasalta.ui.theme.componets.CustomTextField
 import com.example.saltasalta.ui.theme.componets.MascotCharacter
 import com.example.saltasalta.ui.theme.componets.WhiteButton
 
 @Composable
 fun EditProfileScreen(
+    currentUser: com.example.saltasalta.data.models.UserResponse,
     onBackClick: () -> Unit = {},
     onSaveClick: (String, String, String) -> Unit = { _, _, _ -> },
     onLogoutClick: () -> Unit = {}
 ) {
-    var user by remember { mutableStateOf("") }
+    var user by remember { mutableStateOf(currentUser.username) }
     var password by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
 
@@ -183,4 +186,29 @@ fun EditProfileScreen(
         }
     }
 }
+@Preview(
+    name = "Edit Profile Screen - Dark Mode",
+    showBackground = true,
+    showSystemUi = true,
+    backgroundColor = 0xFF000000 // Color de fondo negro para el preview
+)
+@Composable
+fun EditProfileScreenPreview() {
+    // Creamos un usuario de prueba (dummy data)
+    val dummyUser = UserResponse(
+        123,
+        "GotaAventurera",
+         "gota@example.com"
+    )
 
+    // Llamamos a la pantalla pasándole los datos de prueba y lambdas vacías
+    EditProfileScreen(
+        currentUser = dummyUser,
+        onBackClick = { /* Simulación de clic en regresar */ },
+        onSaveClick = { user, oldPass, newPass ->
+            // Podemos imprimir en consola para verificar que funciona
+            println("Guardar: User=$user, OldPass=$oldPass, NewPass=$newPass")
+        },
+        onLogoutClick = { /* Simulación de clic en cerrar sesión */ }
+    )
+}
