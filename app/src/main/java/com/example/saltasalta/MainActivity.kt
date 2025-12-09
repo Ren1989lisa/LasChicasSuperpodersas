@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.saltasalta.data.api.RetrofitClient
 import com.example.saltasalta.data.models.UserResponse
@@ -44,6 +45,7 @@ fun AppNavigation(authRepository: AuthRepository) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     
     var isLoading by remember { mutableStateOf(false) }
     val currentUserState = remember { mutableStateOf<UserResponse?>(null) }
@@ -52,7 +54,8 @@ fun AppNavigation(authRepository: AuthRepository) {
     val gameViewModel = remember {
         GameViewModel(
             api = RetrofitClient.apiService,
-            userIdProvider = { currentUserState.value?.id ?: -1 }
+            userIdProvider = { currentUserState.value?.id ?: -1 },
+            context = context
         )
     }
 

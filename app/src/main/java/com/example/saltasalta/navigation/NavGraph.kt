@@ -2,6 +2,8 @@ package com.example.saltasalta.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,10 +56,20 @@ fun NavGraph(
             )
         }
         composable(Screen.Menu.route) {
+            val user = currentUser.value
+            val bestScore = remember(user?.id) {
+                if (user?.id != null) {
+                    gameViewModel.getBestScore(user.id)
+                } else {
+                    0
+                }
+            }
+            
             GameMenuScreen(
                 onPlayClick = { navController.navigate(Screen.Game.route) },
                 onProfileClick = { navController.navigate(Screen.Profile.route) },
-                onTopClick = { navController.navigate(Screen.TopPlayers.route) }
+                onTopClick = { navController.navigate(Screen.TopPlayers.route) },
+                bestScore = bestScore
             )
         }
         composable(Screen.Game.route) {

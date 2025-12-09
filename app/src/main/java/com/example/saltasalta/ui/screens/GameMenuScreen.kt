@@ -39,7 +39,8 @@ import com.example.saltasalta.ui.componets.MenuIcon
 fun GameMenuScreen(
     onPlayClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    onTopClick: () -> Unit = {}
+    onTopClick: () -> Unit = {},
+    bestScore: Int = 0
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -122,6 +123,16 @@ fun GameMenuScreen(
                     // fontWeight = FontWeight.Bold // Opcional: poner negritas
                 )
             }
+            
+            // Mostrar mejor puntaje del usuario
+            Spacer(Modifier.height(16.dp))
+            
+            Text(
+                text = if (bestScore > 0) "Mejor: $bestScore" else "Mejor: --",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
 
         // Montañas en la parte inferior
