@@ -93,4 +93,4 @@ fun TopPlayersScreen(onBack: () -> Unit) {
 @Composable
 fun PreviewTopPlayersScreen() {
     TopPlayersScreen(onBack = { })
-}
+    }

@@ -124,4 +124,4 @@ fun PlayButton() {
 @Composable
 fun PreviewGameMenuScreen() {
     GameMenuScreen()
-}
+    }
