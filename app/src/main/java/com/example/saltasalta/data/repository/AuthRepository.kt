@@ -1,6 +1,7 @@
 package com.example.saltasalta.data.repository
 
 import com.example.saltasalta.data.api.RetrofitClient
+import com.example.saltasalta.data.models.UpdateUserRequest
 import com.example.saltasalta.data.models.UserRequest
 import com.example.saltasalta.data.models.UserResponse
 
@@ -11,6 +12,18 @@ sealed class AuthResult {
 
 class AuthRepository {
     private val apiService = RetrofitClient.apiService
+    private fun parseError(responseCode: Int, message: String?, errorBody: String?): String {
+        val raw = errorBody ?: message ?: "Error $responseCode"
+        return try {
+            if (raw.contains("\"error\"")) {
+                val start = raw.indexOf("\"error\":\"") + 9
+                val end = raw.indexOf("\"", start)
+                if (start > 8 && end > start) raw.substring(start, end) else raw
+            } else raw
+        } catch (_: Exception) {
+            raw
+        }
+    }
     
     suspend fun login(username: String, password: String): AuthResult {
         return try {
@@ -26,27 +39,8 @@ class AuthRepository {
                     AuthResult.Error(body?.error ?: "Error desconocido")
                 }
             } else {
-                // Intentar parsear el error del cuerpo de la respuesta
-                val errorBody = response.errorBody()?.string()
-                // El servidor Flask devuelve JSON con campo "error"
-                // Retrofit ya parsea esto, pero si falla, usamos el mensaje directo
-                val errorMessage = if (errorBody != null && errorBody.contains("\"error\"")) {
-                    // Extraer el mensaje de error del JSON manualmente
-                    try {
-                        val start = errorBody.indexOf("\"error\":\"") + 9
-                        val end = errorBody.indexOf("\"", start)
-                        if (start > 8 && end > start) {
-                            errorBody.substring(start, end)
-                        } else {
-                            errorBody
-                        }
-                    } catch (e: Exception) {
-                        errorBody
-                    }
-                } else {
-                    errorBody ?: "Error: ${response.code()} - ${response.message()}"
-                }
-                AuthResult.Error(errorMessage)
+                val error = parseError(response.code(), response.message(), response.errorBody()?.string())
+                AuthResult.Error(error)
             }
         } catch (e: Exception) {
             AuthResult.Error("Error de conexión: ${e.message}")
@@ -67,27 +61,46 @@ class AuthRepository {
                     AuthResult.Error(body?.error ?: "Error desconocido")
                 }
             } else {
-                // Intentar parsear el error del cuerpo de la respuesta
-                val errorBody = response.errorBody()?.string()
-                // El servidor Flask devuelve JSON con campo "error"
-                // Retrofit ya parsea esto, pero si falla, usamos el mensaje directo
-                val errorMessage = if (errorBody != null && errorBody.contains("\"error\"")) {
-                    // Extraer el mensaje de error del JSON manualmente
-                    try {
-                        val start = errorBody.indexOf("\"error\":\"") + 9
-                        val end = errorBody.indexOf("\"", start)
-                        if (start > 8 && end > start) {
-                            errorBody.substring(start, end)
-                        } else {
-                            errorBody
-                        }
-                    } catch (e: Exception) {
-                        errorBody
-                    }
+                val error = parseError(response.code(), response.message(), response.errorBody()?.string())
+                AuthResult.Error(error)
+            }
+        } catch (e: Exception) {
+            AuthResult.Error("Error de conexión: ${e.message}")
+        }
+    }
+
+    suspend fun updateUser(id: Int, username: String?, password: String?): AuthResult {
+        return try {
+            val response = apiService.actualizarUsuario(
+                id = id,
+                body = UpdateUserRequest(username = username, password = password)
+            )
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.usuario != null) {
+                    AuthResult.Success(body.usuario!!)
                 } else {
-                    errorBody ?: "Error: ${response.code()} - ${response.message()}"
+                    AuthResult.Error(body?.error ?: "Error desconocido")
                 }
-                AuthResult.Error(errorMessage)
+            } else {
+                val error = parseError(response.code(), response.message(), response.errorBody()?.string())
+                AuthResult.Error(error)
+            }
+        } catch (e: Exception) {
+            AuthResult.Error("Error de conexión: ${e.message}")
+        }
+    }
+
+    suspend fun deleteUser(id: Int): AuthResult {
+        return try {
+            val response = apiService.eliminarUsuario(id)
+            if (response.isSuccessful) {
+                AuthResult.Success(
+                    UserResponse(id = -1, username = "", fecha_registro = null)
+                )
+            } else {
+                val error = parseError(response.code(), response.message(), response.errorBody()?.string())
+                AuthResult.Error(error)
             }
         } catch (e: Exception) {
             AuthResult.Error("Error de conexión: ${e.message}")

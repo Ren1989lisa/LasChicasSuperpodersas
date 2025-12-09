@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.saltasalta.data.models.UserResponse
 import com.example.saltasalta.ui.componets.LoginAvatar
 import com.example.saltasalta.ui.componets.PasswordField
 import com.example.saltasalta.ui.componets.UserInputField
@@ -45,12 +46,13 @@ import com.example.saltasalta.ui.theme.componets.WhiteButton
 
 @Composable
 fun EditProfileScreen(
-    currentUser: String = "Usuario",
+    currentUser: UserResponse? = null,
     onBackClick: () -> Unit = {},
     onSaveClick: (String, String, String) -> Unit = { _, _, _ -> },
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ){
-    var user by remember { mutableStateOf(currentUser) }
+    var user by remember { mutableStateOf(currentUser?.username ?: "Usuario") }
     var password by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
 
@@ -135,13 +137,22 @@ fun EditProfileScreen(
                     label = "Guardar"
                 )
 
-                Text(
-                    text = "Cerrar sesión",
-                    color = Color(0xFFCCCCCC),
-                    modifier = Modifier
-                        .clickable { onLogoutClick() }
-                        .padding(vertical = 8.dp)
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = "Cerrar sesión",
+                        color = Color(0xFFCCCCCC),
+                        modifier = Modifier
+                            .clickable { onLogoutClick() }
+                            .padding(vertical = 4.dp)
+                    )
+                    Text(
+                        text = "Eliminar cuenta",
+                        color = Color(0xFFFF8A80),
+                        modifier = Modifier
+                            .clickable { onDeleteClick() }
+                            .padding(vertical = 4.dp)
+                    )
+                }
             }
         }
 
@@ -171,10 +182,11 @@ fun EditProfileScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 8.dp)
-                .size(96.dp)
+                .size(110.dp)
         ) {
             LoginAvatar(
-                modifier = Modifier.fillMaxWidth()            )
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

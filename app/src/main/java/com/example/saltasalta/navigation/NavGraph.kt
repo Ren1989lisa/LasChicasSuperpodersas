@@ -1,90 +1,88 @@
 package com.example.saltasalta.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.saltasalta.data.models.UserResponse
+import com.example.saltasalta.ui.screens.EditProfileScreen
+import com.example.saltasalta.ui.screens.GameMenuScreen
+import com.example.saltasalta.ui.screens.GamePlayScreen
+import com.example.saltasalta.ui.screens.LoginScreen
+import com.example.saltasalta.ui.screens.RegisterScreen
+import com.example.saltasalta.ui.screens.TopPlayersScreen
 
 sealed class Screen(val route: String) {
-    object Profile : Screen("profile")
+    object Login : Screen("login")
+    object Register : Screen("register")
+    object Menu : Screen("menu")
     object Game : Screen("game")
+    object Profile : Screen("profile")
+    object TopPlayers : Screen("topPlayers")
 }
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    currentUser: UserResponse,
-    onLogout: () -> Unit
+    currentUser: MutableState<UserResponse?>,
+    onAuth: (UserResponse) -> Unit,
+    onLogin: (String, String) -> Unit,
+    onRegister: (String, String, String) -> Unit,
+    onSaveProfile: (String, String, String) -> Unit,
+    onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Profile.route
+        startDestination = Screen.Login.route
     ) {
-        composable(Screen.Profile.route) {
-            EditProfileScreen(
-                currentUser = currentUser,
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onSaveClick = { _, _, _ -> },
-                onLogoutClick = onLogout
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginClick = onLogin,
+                onRegisterClick = { navController.navigate(Screen.Register.route) }
             )
         }
-
-        composable(Screen.Game.route) {
-            GameScreen(
-                onBackClick = {
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                onRegisterClick = onRegister,
+                onBackToLogin = {
                     navController.popBackStack()
                 }
             )
         }
+        composable(Screen.Menu.route) {
+            GameMenuScreen(
+                onPlayClick = { navController.navigate(Screen.Game.route) },
+                onProfileClick = { navController.navigate(Screen.Profile.route) },
+                onTopClick = { navController.navigate(Screen.TopPlayers.route) }
+            )
+        }
+        composable(Screen.Game.route) {
+            GamePlayScreen()
+        }
+        composable(Screen.Profile.route) {
+            val user = currentUser.value
+            EditProfileScreen(
+                currentUser = user,
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = onSaveProfile,
+                onLogoutClick = {
+                    onLogout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onDeleteClick = {
+                    onDeleteAccount()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.TopPlayers.route) {
+            TopPlayersScreen(onBackClick = { navController.popBackStack() })
+        }
     }
 }
-
-// Placeholders para evitar referencias a pantallas eliminadas.
-@Composable
-private fun EditProfileScreen(
-    currentUser: UserResponse,
-    onBackClick: () -> Unit,
-    onSaveClick: (String, String, String) -> Unit,
-    onLogoutClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Pantalla de perfil no disponible",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-@Composable
-private fun GameScreen(
-    onBackClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Pantalla de juego no disponible",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-

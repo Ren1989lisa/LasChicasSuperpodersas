@@ -37,7 +37,9 @@ import com.example.saltasalta.ui.componets.MenuIcon
 
 @Composable
 fun GameMenuScreen(
-    onPlayClick: () -> Unit = {}
+    onPlayClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onTopClick: () -> Unit = {}
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -55,11 +57,17 @@ fun GameMenuScreen(
         ) {
             // Iconos superiores (Menú y Perfil)
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween // Separa los iconos a los extremos
             ) {
-                MenuIcon(text = "PERFIL", "\uD83D\uDC64")
-                MenuIcon(text = "AJUSTES", "⚙\uFE0F")
+                Box(modifier = Modifier.clickable { onProfileClick() }) {
+                    MenuIcon(text = "PERFIL", "\uD83D\uDC64")
+                }
+                Box(modifier = Modifier.clickable { onTopClick() }) {
+                    MenuIcon(text = "TOP", "🏆")
+                }
             }
 
             Spacer(Modifier.height(screenHeight * 0.05f))
