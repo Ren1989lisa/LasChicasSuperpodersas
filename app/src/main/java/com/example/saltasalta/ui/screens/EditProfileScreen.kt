@@ -173,7 +173,8 @@ fun EditProfileScreen(
                 .padding(end = 16.dp, bottom = 8.dp)
                 .size(96.dp)
         ) {
-            LoginAvatar()
+            LoginAvatar(
+                modifier = Modifier.fillMaxWidth()            )
         }
     }
 }
