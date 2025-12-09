@@ -22,9 +22,6 @@ import com.example.saltasalta.data.models.UserResponse
 import com.example.saltasalta.data.repository.AuthRepository
 import com.example.saltasalta.navigation.Screen
 import com.example.saltasalta.navigation.NavGraph
-import com.example.saltasalta.ui.screens.EditProfileScreen
-import com.example.saltasalta.ui.screens.GameScreen
-import com.example.saltasalta.ui.screens.HomeScreen
 import com.example.saltasalta.ui.screens.LoginScreen
 import com.example.saltasalta.ui.screens.RegisterScreen
 import com.example.saltasalta.ui.theme.SaltaSaltaTheme
