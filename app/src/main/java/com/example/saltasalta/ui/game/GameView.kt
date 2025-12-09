@@ -43,6 +43,7 @@ class GameView @JvmOverloads constructor(
     private val platformCount = 8
     private val platformMinW = 140f
     private val platformMaxW = 200f
+    private val platformSpacing = 0.18f  // 18% de la altura de pantalla entre plataformas
 
     // Pinturas
     private val paintBg = Paint().apply { color = Color.parseColor("#0F0F0F") }
@@ -159,7 +160,18 @@ class GameView @JvmOverloads constructor(
                 val w = Random.nextFloat() * (platformMaxW - platformMinW) + platformMinW
                 p.w = w
                 p.x = Random.nextFloat() * (width - w)
-                p.y = Random.nextFloat() * height * 0.2f
+                
+                // Encontrar la plataforma más alta (menor Y) que esté visible
+                val highestPlatform = platforms
+                    .filter { it.y >= 0 && it.y <= height }
+                    .minByOrNull { it.y }
+                
+                // Colocar la nueva plataforma a una distancia fija arriba de la más alta
+                val spacing = height * platformSpacing
+                p.y = (highestPlatform?.y ?: height * 0.5f) - spacing
+                
+                // Asegurar que no quede fuera de la pantalla por arriba
+                p.y = p.y.coerceAtLeast(height * 0.05f)
             }
         }
 
