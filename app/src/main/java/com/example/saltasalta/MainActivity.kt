@@ -15,12 +15,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.saltasalta.data.api.RetrofitClient
 import com.example.saltasalta.data.models.UserResponse
 import com.example.saltasalta.data.repository.AuthRepository
 import com.example.saltasalta.data.repository.AuthResult
 import com.example.saltasalta.navigation.NavGraph
 import com.example.saltasalta.navigation.Screen
 import com.example.saltasalta.ui.theme.SaltaSaltaTheme
+import com.example.saltasalta.viewmodel.GameViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -45,6 +47,14 @@ fun AppNavigation(authRepository: AuthRepository) {
     
     var isLoading by remember { mutableStateOf(false) }
     val currentUserState = remember { mutableStateOf<UserResponse?>(null) }
+
+    // GameViewModel para enviar score; usa RetrofitClient.apiService
+    val gameViewModel = remember {
+        GameViewModel(
+            api = RetrofitClient.apiService,
+            userIdProvider = { currentUserState.value?.id ?: -1 }
+        )
+    }
 
     fun showMessage(message: String) {
         coroutineScope.launch { snackbarHostState.showSnackbar(message) }
@@ -144,7 +154,13 @@ fun AppNavigation(authRepository: AuthRepository) {
         onRegister = ::handleRegister,
         onSaveProfile = ::handleSaveProfile,
         onLogout = ::handleLogout,
-        onDeleteAccount = ::handleDeleteAccount
+        onDeleteAccount = ::handleDeleteAccount,
+        gameViewModel = gameViewModel,
+        onBackToMenu = {
+            navController.navigate(Screen.Menu.route) {
+                popUpTo(Screen.Menu.route) { inclusive = true }
+            }
+        }
     )
 
     SnackbarHost(

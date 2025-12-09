@@ -1,6 +1,7 @@
 package com.example.saltasalta.data.api
 
 import com.example.saltasalta.data.models.ApiResponse
+import com.example.saltasalta.data.models.ScoreRequest
 import com.example.saltasalta.data.models.UpdateUserRequest
 import com.example.saltasalta.data.models.UserRequest
 import com.example.saltasalta.data.models.UserResponse
@@ -27,6 +28,11 @@ interface ApiService {
     @DELETE("api/usuarios/{id}")
     suspend fun eliminarUsuario(
         @Path("id") id: Int
+    ): Response<ApiResponse<Unit>>
+
+    @POST("api/puntuaciones")
+    suspend fun guardarPuntuacion(
+        @Body body: ScoreRequest
     ): Response<ApiResponse<Unit>>
 }
 

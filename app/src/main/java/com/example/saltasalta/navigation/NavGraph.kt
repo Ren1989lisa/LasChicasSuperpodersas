@@ -31,7 +31,9 @@ fun NavGraph(
     onRegister: (String, String, String) -> Unit,
     onSaveProfile: (String, String, String) -> Unit,
     onLogout: () -> Unit,
-    onDeleteAccount: () -> Unit
+    onDeleteAccount: () -> Unit,
+    gameViewModel: com.example.saltasalta.viewmodel.GameViewModel,
+    onBackToMenu: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -59,7 +61,10 @@ fun NavGraph(
             )
         }
         composable(Screen.Game.route) {
-            GamePlayScreen()
+            GamePlayScreen(
+                viewModel = gameViewModel,
+                onBackToMenu = onBackToMenu
+            )
         }
         composable(Screen.Profile.route) {
             val user = currentUser.value
