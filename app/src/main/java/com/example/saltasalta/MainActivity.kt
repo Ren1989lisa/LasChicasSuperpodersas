@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable 
+@Composable
 fun AppNavigation(authRepository: AuthRepository) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
