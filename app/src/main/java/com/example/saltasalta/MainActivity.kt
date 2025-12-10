@@ -24,6 +24,7 @@ import com.example.saltasalta.navigation.NavGraph
 import com.example.saltasalta.navigation.Screen
 import com.example.saltasalta.ui.theme.SaltaSaltaTheme
 import com.example.saltasalta.viewmodel.GameViewModel
+import com.example.saltasalta.viewmodel.TopPlayersViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
+@Composable 
 fun AppNavigation(authRepository: AuthRepository) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -57,6 +58,11 @@ fun AppNavigation(authRepository: AuthRepository) {
             userIdProvider = { currentUserState.value?.id ?: -1 },
             context = context
         )
+    }
+
+    // ViewModel para listar usuarios en TopPlayers
+    val topPlayersViewModel = remember {
+        TopPlayersViewModel(RetrofitClient.apiService)
     }
 
     fun showMessage(message: String) {
@@ -163,7 +169,8 @@ fun AppNavigation(authRepository: AuthRepository) {
             navController.navigate(Screen.Menu.route) {
                 popUpTo(Screen.Menu.route) { inclusive = true }
             }
-        }
+        },
+        topPlayersViewModel = topPlayersViewModel
     )
 
     SnackbarHost(

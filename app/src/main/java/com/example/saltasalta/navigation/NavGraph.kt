@@ -14,6 +14,7 @@ import com.example.saltasalta.ui.screens.GamePlayScreen
 import com.example.saltasalta.ui.screens.LoginScreen
 import com.example.saltasalta.ui.screens.RegisterScreen
 import com.example.saltasalta.ui.screens.TopPlayersScreen
+import com.example.saltasalta.viewmodel.TopPlayersViewModel
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -35,7 +36,8 @@ fun NavGraph(
     onLogout: () -> Unit,
     onDeleteAccount: () -> Unit,
     gameViewModel: com.example.saltasalta.viewmodel.GameViewModel,
-    onBackToMenu: () -> Unit
+    onBackToMenu: () -> Unit,
+    topPlayersViewModel: TopPlayersViewModel
 ) {
     NavHost(
         navController = navController,
@@ -99,7 +101,10 @@ fun NavGraph(
             )
         }
         composable(Screen.TopPlayers.route) {
-            TopPlayersScreen(onBackClick = { navController.popBackStack() })
+            TopPlayersScreen(
+                viewModel = topPlayersViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

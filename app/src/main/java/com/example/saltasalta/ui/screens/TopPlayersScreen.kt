@@ -2,18 +2,7 @@ package com.example.saltasalta.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +13,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,18 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.saltasalta.ui.componets.LoginAvatar
 import com.example.saltasalta.ui.componets.PlayerPill
+import com.example.saltasalta.viewmodel.TopPlayersViewModel
 
 @Composable
 fun TopPlayersScreen(
+    viewModel: TopPlayersViewModel,
     onBackClick: () -> Unit = {}
 ) {
-    val players = listOf(
-        "Pepe123",
-        "Momo_de_twice",
-        "PaolitaS",
-        "ChicoBTS",
-        "PapaRuffle"
-    )
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) { viewModel.loadUsers() }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -71,7 +61,7 @@ fun TopPlayersScreen(
             )
         }
 
-        // Card con el top
+        // Card con la lista de usuarios
         Card(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -87,30 +77,34 @@ fun TopPlayersScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "TOP\nJUGADORES",
+                    text = "TODOS\nLOS USUARIOS",
                     color = Color.White,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                players.forEachIndexed { index, player ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "${index + 1}-",
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 12.dp)
-                        )
-                        PlayerPill(
-                            text = player,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                when {
+                    state.loading -> Text("Cargando...", color = Color.White)
+                    state.error != null -> Text("Error: ${state.error}", color = Color.Red)
+                    else -> state.users.drop(5).forEachIndexed { index, user ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${index + 6}-",
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(end = 12.dp)
+                            )
+                            PlayerPill(
+                                text = user.username,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
@@ -160,7 +154,6 @@ fun TopPlayersScreen(
 )
 @Composable
 fun PreviewTopPlayersScreen() {
-    TopPlayersScreen()
+    // Sin ViewModel real en preview
+    Text("Preview TopPlayersScreen")
 }
-
-
